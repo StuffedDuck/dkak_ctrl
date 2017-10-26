@@ -15,10 +15,11 @@ class dkak_texscan
     private:
         int path_distance = 0;
     public:
-        void init(dkak_stepper, dkak_stepper, int);
+        void init(dkak_stepper, dkak_stepper, dkak_stepper, dkak_stepper, int);
         bool exec_cmd(String);
         bool errorfree();
-        dkak_stepper stepper_transl, stepper_led;
+        dkak_stepper stepper_transl_x, stepper_transl_y;
+        dkak_stepper stepper_led_x, stepper_led_y;
         void serial_feedback(int);
 };
 

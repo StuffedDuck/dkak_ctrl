@@ -16,10 +16,12 @@
 //CONSTRUCTORS >> MEMBER INITILIZATION
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //initialize dkak_texscan by supplying steppers (translation and led) and led relais information
-void dkak_texscan::init(dkak_stepper ip_stepper_transl, dkak_stepper ip_stepper_led, int ip_path_distance)
+void dkak_texscan::init(dkak_stepper ip_stepper_transl_x, dkak_stepper ip_stepper_led_x, dkak_stepper ip_stepper_transl_y, dkak_stepper ip_stepper_led_y, int ip_path_distance)
 {
-    stepper_transl = ip_stepper_transl;
-    stepper_led = ip_stepper_led;
+    stepper_transl_x = ip_stepper_transl_x;
+    stepper_led_x = ip_stepper_led_x;
+    stepper_transl_y = ip_stepper_transl_y;
+    stepper_led_y = ip_stepper_led_y;
     path_distance = ip_path_distance;
 }
 
@@ -29,7 +31,7 @@ void dkak_texscan::init(dkak_stepper ip_stepper_transl, dkak_stepper ip_stepper_
 //check for errors from all components
 bool dkak_texscan::errorfree()
 {
-    return (stepper_transl.errorfree && stepper_led.errorfree);
+    return (stepper_transl_x.errorfree && stepper_led_x.errorfree && stepper_transl_y.errorfree && stepper_led_y.errorfree);
 }
 
 //execute bluetooth command
@@ -43,10 +45,10 @@ bool dkak_texscan::exec_cmd(String bt_command)
         {
             double rot_val = 90.0;
 
-            //rotate +deg
+            //rotate x +deg 
             if (errorfree())
             {  
-                stepper_led.rotate(rot_val);
+                stepper_led_x.rotate(rot_val);
                 serial_feedback(1);
                 delay(1000);
             }
@@ -54,15 +56,15 @@ bool dkak_texscan::exec_cmd(String bt_command)
             //move +x
             if (errorfree())
             {  
-                stepper_transl.move(-path_distance);
+                stepper_transl_x.move(-path_distance);
                 serial_feedback(1);
                 delay(1000);
             }
 
-            //rotate -2*deg
+            //rotate x -2*deg
             if (errorfree())
             {  
-                stepper_led.rotate(2 * -rot_val);
+                stepper_led_x.rotate(2 * -rot_val);
                 serial_feedback(1);
                 delay(1000);
             }
@@ -70,22 +72,38 @@ bool dkak_texscan::exec_cmd(String bt_command)
             //move x home
             if (errorfree())
             {  
-                stepper_transl.movehome(true);          //TODO: shouldn't require "true", since value has default
+                stepper_transl_x.movehome(true);          //TODO: shouldn't require "true", since value has default
                 serial_feedback(1);
                 delay(1000);
             }
 
-            //rotate to neutral
+            //rotate x to neutral
             if (errorfree())
             {  
-                stepper_led.rotate(rot_val);
+                stepper_led_x.rotate(rot_val);
+                serial_feedback(1);
+                delay(1000);
+            }
+
+            //rotate y +deg 
+            if (errorfree())
+            {  
+                stepper_led_y.rotate(rot_val);
+                serial_feedback(1);
+                delay(1000);
+            }
+
+            //move +y
+            if (errorfree())
+            {  
+                stepper_transl_y.move(-path_distance);
                 serial_feedback(1);
                 delay(1000);
             }
         }
         else if (bt_command == "sx_reset")
         {
-            stepper_transl.movehome();
+            stepper_transl_x.movehome();
         }
     }
     else serial_feedback(2);
@@ -103,14 +121,18 @@ void dkak_texscan::serial_feedback(int msg_mode)
     {
         case 1:
         {
-            String pos_str = String(stepper_transl.pos_current);
-            String rot_str = String(stepper_led.rot_current);
-            snprintf(buffer, sizeof(buffer), "%s(%s, %s) - transform: %s - %s", "STEPPER_X_UNIT", stepper_transl.state.c_str(), stepper_led.state.c_str(), pos_str.c_str(), rot_str.c_str());
+            String x_pos_str = String(stepper_transl_x.pos_current);
+            String x_rot_str = String(stepper_led_x.rot_current);
+            String y_pos_str = String(stepper_transl_y.pos_current);
+            String y_rot_str = String(stepper_led_y.rot_current);   //CONTINUE HERE - adjust feedback to include both stepper sides
+            snprintf(   buffer, sizeof(buffer), "%s(X - %s/%s, Y - %s/%s) - transform: X - %s/%s, Y - %s/%s",
+                        "DKAK_TEXSCAN", stepper_transl_x.state.c_str(), stepper_led_x.state.c_str(), stepper_transl_y.state.c_str(), stepper_led_y.state.c_str(),
+                        x_pos_str.c_str(), x_rot_str.c_str(), y_pos_str.c_str(), y_rot_str.c_str());
             break;
         }
         case 2:
         {
-            snprintf(buffer, sizeof(buffer), "%s(%s, %s) - can't execute command, in errorstate", "STEPPER_X_UNIT", stepper_transl.state.c_str(), stepper_led.state.c_str());
+            snprintf(buffer, sizeof(buffer), "%s(%s, %s) - can't execute command, in errorstate", "STEPPER_X_UNIT", stepper_transl_x.state.c_str(), stepper_led_x.state.c_str());
         }
 
     }
