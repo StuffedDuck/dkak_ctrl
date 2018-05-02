@@ -100,6 +100,30 @@ bool dkak_texscan::exec_cmd(String bt_command)
                 serial_feedback(1);
                 delay(1000);
             }
+
+            //rotate y -2*deg
+            if (errorfree())
+            {  
+                stepper_led_y.rotate(2 * -rot_val);
+                serial_feedback(1);
+                delay(1000);
+            }
+
+            //move y home
+            if (errorfree())
+            {  
+                stepper_transl_y.movehome(true);          //TODO: shouldn't require "true", since value has default
+                serial_feedback(1);
+                delay(1000);
+            }
+
+            //rotate y to neutral
+            if (errorfree())
+            {  
+                stepper_led_y.rotate(rot_val);
+                serial_feedback(1);
+                delay(1000);
+            }
         }
         else if (bt_command == "sx_reset")
         {

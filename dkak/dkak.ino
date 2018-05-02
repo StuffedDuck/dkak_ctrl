@@ -32,7 +32,7 @@ void setup()
     const byte x_pin_pul = 5;
     const byte x_pin_dir = 6;
     const byte x_pin_ena = 7;
-    const byte x_pin_limitHome = 8;
+    const byte x_pin_limitHome = 44;
     const byte x_pin_limit = 9;
 
     const byte xled_pin_pul = 10; 
@@ -42,8 +42,8 @@ void setup()
     const byte y_pin_pul = 34;
     const byte y_pin_dir = 35;
     const byte y_pin_ena = 36;
-    const byte y_pin_limitHome = 37;
-    const byte y_pin_limit = 38;
+    const byte y_pin_limitHome = 42;
+    const byte y_pin_limit = 40;
 
     const byte yled_pin_pul = 2; 
     const byte yled_pin_dir = 3;

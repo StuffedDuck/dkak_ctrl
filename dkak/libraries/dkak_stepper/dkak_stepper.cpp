@@ -256,7 +256,7 @@ bool dkak_stepper::triggeredLimit(int move_mode, bool report = true) //TODO: add
 			}
 			else return false;
 		}
-	}
+	} 
 }
 
 //validate step count 
