@@ -16,6 +16,7 @@ void setup()
     delay(2000);
 
     //BLUETOOTH SETUP - uno and mega only support softwareserial on specific pins (2+3 used for uno)
+    //RX - TX pins need to be swapped on hc05 module? setup currently requiring 50 - hc05 tx and 51 - hc05 rx >> rx and tx refer to components in and out!
     const byte pin_led = 13;
     const byte pin_rx = 50; //2 - uno
     const byte pin_tx = 51; //3 - uno
@@ -92,6 +93,7 @@ void setup()
     String delimiter = "################################################################";
     Serial.println(delimiter);
     String dkak_msg;
+
     if (!stepper_x.isHome())
     {
         //update dkak state if home position was reached
